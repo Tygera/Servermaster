@@ -4,27 +4,34 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-# Debug
-if [[ "${1}" == "-d" ]] ; then
-	set -o xtrace
-fi
-
-
-
 # Variables 
-
 ipt="$(which iptables)"
-
 ipt_save_v4="/etc/iptables/rules.v4"
 ipt_save_v6="/etc/iptables/rules.v6"
-
 if_lan=""
 if_wan="ens192"
-
 trusted="213.147.0.0/19"
 default_policy="DROP"
-
 new_tcp_in="-p tcp -m state --state NEW -m tcp --dport"
+
+get_args() {
+
+        while [[ "$1" ]] ; do
+
+                case $1 in
+
+                        -a|--accept)    default_policy="ACCEPT"         ;;
+                        -d|--drop)      default_policy="DROP"           ;;
+                        -r|--reject)    default_policy="REJECT"         ;;
+                        -x|--debug)     set -o xtrace                   ;;
+                        -l|--lan)       if_lan="${2:-error}" ; shift    ;;
+                        -w|--wan)       if_wan="${2:-error}" ; shift    ;;
+                        -S|--ssh-only)  ssh_only="true"                 ;;
+                        *)              echo "$1: option not recognized";;
+                esac
+                shift
+        done
+}
 
 start() {
 
@@ -48,20 +55,20 @@ start() {
 	$ipt -t mangle -A PREROUTING -m conntrack --ctstate INVALID -j DROP
 	$ipt -t mangle -A PREROUTING -p tcp ! --syn -m state --state NEW -j LOG_DROP
 	$ipt -t mangle -A PREROUTING -p tcp -m conntrack --ctstate NEW -m tcpmss ! --mss 536:65535 -j DROP
-        $ipt -t mangle -A PREROUTING -p tcp --tcp-flags ALL FIN,URG,PSH -j LOG_DROP
-        $ipt -t mangle -A PREROUTING -p tcp --tcp-flags ALL SYN,RST,ACK,FIN,URG -j LOG_DROP
-        $ipt -t mangle -A PREROUTING -p tcp --tcp-flags ALL SYN,FIN,RST,PSH,URG -j LOG_DROP
-        $ipt -t mangle -A PREROUTING -p tcp --tcp-flags SYN,RST SYN,RST -j LOG_DROP
-        $ipt -t mangle -A PREROUTING -p tcp --tcp-flags SYN,FIN SYN,FIN -j LOG_DROP
-        $ipt -t mangle -A PREROUTING -p tcp --tcp-flags FIN,RST FIN,RST -j LOG_DROP
-        $ipt -t mangle -A PREROUTING -p tcp --tcp-flags SYN,FIN,PSH SYN,FIN,PSH -j LOG_DROP
-        $ipt -t mangle -A PREROUTING -p tcp --tcp-flags SYN,FIN,URG SYN,FIN,URG -j LOG_DROP
-        $ipt -t mangle -A PREROUTING -p tcp --tcp-flags SYN,FIN,RST SYN,FIN,RST -j LOG_DROP
-        $ipt -t mangle -A PREROUTING -p tcp --tcp-flags ALL ALL -j LOG_DROP
-        $ipt -t mangle -A PREROUTING -p tcp --tcp-flags ALL NONE -j LOG_DROP
+	$ipt -t mangle -A PREROUTING -p tcp --tcp-flags ALL FIN,URG,PSH -j LOG_DROP
+	$ipt -t mangle -A PREROUTING -p tcp --tcp-flags ALL SYN,RST,ACK,FIN,URG -j LOG_DROP
+	$ipt -t mangle -A PREROUTING -p tcp --tcp-flags ALL SYN,FIN,RST,PSH,URG -j LOG_DROP
+	$ipt -t mangle -A PREROUTING -p tcp --tcp-flags SYN,RST SYN,RST -j LOG_DROP
+	$ipt -t mangle -A PREROUTING -p tcp --tcp-flags SYN,FIN SYN,FIN -j LOG_DROP
+	$ipt -t mangle -A PREROUTING -p tcp --tcp-flags FIN,RST FIN,RST -j LOG_DROP
+	$ipt -t mangle -A PREROUTING -p tcp --tcp-flags SYN,FIN,PSH SYN,FIN,PSH -j LOG_DROP
+	$ipt -t mangle -A PREROUTING -p tcp --tcp-flags SYN,FIN,URG SYN,FIN,URG -j LOG_DROP
+	$ipt -t mangle -A PREROUTING -p tcp --tcp-flags SYN,FIN,RST SYN,FIN,RST -j LOG_DROP
+	$ipt -t mangle -A PREROUTING -p tcp --tcp-flags ALL ALL -j LOG_DROP
+	$ipt -t mangle -A PREROUTING -p tcp --tcp-flags ALL NONE -j LOG_DROP
 
 
-  # BASIC INPUT RULES
+# BASIC INPUT RULES
 	
   	# Drop new connections not starting with a SYN packet
 	$ipt -A INPUT -p tcp ! --syn -m state --state NEW -j LOG_DROP
@@ -140,5 +147,26 @@ start() {
 
 
 }
+
+get_args() {
+	
+	while [[ "$1" ]] ; do
+
+		case $1 in 
+
+			-a|--accept)	default_policy="ACCEPT"		;;
+			-d|--drop)	default_policy="DROP"		;;
+			-r|--reject)	default_policy="REJECT"		;;
+			-x|--debug)	set -o xtrace			;;
+			-l|--lan)	if_lan="${2:-error}" ; shift	;;
+			-w|--wan)	if_wan="${2:-error}" ; shift	;;
+			-S|--ssh-only)  ssh_only="true"			;;
+			*)		echo "$1: option not recognized";;
+		esac
+		shift
+	done
+}
+
+
 
 start
