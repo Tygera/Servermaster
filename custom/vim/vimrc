@@ -1,0 +1,41 @@
+set nocompatible
+set mouse=""
+set nowrap
+set backspace=indent,eol,start
+set noautoindent
+set number
+set shiftwidth=4
+set showmatch
+set ignorecase
+set smartcase
+set smarttab
+set hlsearch
+set incsearch
+colorscheme ron
+syntax on
+
+set history=5000
+set undolevels=1000
+set wildignore=*.swp,*.bak
+set title
+set visualbell
+set noerrorbells
+
+set nobackup
+set noswapfile
+
+set magic	" regex
+
+set ts=4
+set cursorline
+
+
+" Set extra options when running in GUI mode
+if has("gui_running")
+	set guioptions-=T
+	set guioptions+=e
+	set t_Co=256
+	set guitablabel=%M\ %t
+endif
+
+

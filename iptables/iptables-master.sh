@@ -51,6 +51,10 @@ start() {
 	$ipt -N LOG_DROP	# Logging of especially invalid packets
 	$ipt -N LOG_ACCEPT	# Log but accept
 
+	# 
+
+	$ipt -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT 
+
 	# PREROUTING 
 	$ipt -t mangle -A PREROUTING -m conntrack --ctstate INVALID -j DROP
 	$ipt -t mangle -A PREROUTING -p tcp ! --syn -m state --state NEW -j LOG_DROP
@@ -94,7 +98,6 @@ start() {
 
 
   	# Allow already established connections 
-	$ipt -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT 
 
 	# LOG and BLOCK  unnecessary packets
 	if [[ ! -z "${if_wan}" ]] ; then 
@@ -148,25 +151,5 @@ start() {
 
 }
 
-get_args() {
-	
-	while [[ "$1" ]] ; do
-
-		case $1 in 
-
-			-a|--accept)	default_policy="ACCEPT"		;;
-			-d|--drop)	default_policy="DROP"		;;
-			-r|--reject)	default_policy="REJECT"		;;
-			-x|--debug)	set -o xtrace			;;
-			-l|--lan)	if_lan="${2:-error}" ; shift	;;
-			-w|--wan)	if_wan="${2:-error}" ; shift	;;
-			-S|--ssh-only)  ssh_only="true"			;;
-			*)		echo "$1: option not recognized";;
-		esac
-		shift
-	done
-}
-
-
-
+get_args ${@}
 start
