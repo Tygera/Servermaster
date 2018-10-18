@@ -1,0 +1,246 @@
+# ----------------------------------------------
+#	Samples file - useful snippets
+#		Do not uncomment
+# ----------------------------------------------
+#
+#
+#
+#  	1. Force www - right way : define a separated server for the 
+#   				   domain and redirect it
+#
+#	server {
+#    		listen 80;
+#    		server_name example.org;
+#    		return 301 $scheme://www.example.org$request_uri;
+#	}
+#
+#	server {
+#    		listen 80;
+#    		server_name www.example.org;
+#    		...
+#	}
+#
+#
+#
+#	2. Force no-www
+#
+#	server {
+#		listen 80;
+#		server_name example.org;
+#	}
+#		
+#	server {
+#		listen 80;
+#  		server_name www.example.org;
+# 	 	return 301 $scheme://example.org$request_uri;
+#	}
+#
+#
+#
+#	3. Force HTTPS
+#
+#	server {
+#		listen 80;
+#		return 301 https://$host$request_uri;
+#	}
+#
+#	server {
+#		listen 443 ssl;
+#
+#		# let the browsers know that we only accept HTTPS
+#		add_header Strict-Transport-Security max-age=2592000;
+#	}
+#	
+#
+#
+#	4. Force trailing slash ( www.example.com/docs --> www.example.com/docs/ )
+#
+#	rewrite ^([^.]*[^/])$ $1/ permanent;
+#
+#
+#	
+#	5. Redirect a single page
+#
+#	server {
+#		location = /oldpage.html {
+#			return 301 http://example.org/newpage.html;
+#		}
+#	}
+#
+#
+#	
+#	6. Redirect an entire site
+#
+#	server {
+#		server_name old-site.com
+#		return 301 $scheme://new-site.com$request_uri;
+#	}
+#
+#
+#
+#	7.
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#

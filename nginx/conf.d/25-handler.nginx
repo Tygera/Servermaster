@@ -1,0 +1,11 @@
+upstream php56-handler {
+	server unix:/var/run/php5.6-fpm.sock;
+}
+
+upstream php72-handler {
+	server unix:/var/run/php7.2-fpm.sock;
+}
+
+upstream php73-handler {
+	server unix:/var/run/php7.3-fpm.sock;
+}
